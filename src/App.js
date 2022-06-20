@@ -1,6 +1,7 @@
 import { useState } from "react";
-import logo from "./logo.svg";
 import "./App.css";
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 function App() {
   const [selectedFile, setSelectedFile] = useState();
@@ -16,7 +17,7 @@ function App() {
 
     formData.append("file", selectedFile);
 
-    fetch("http://127.0.0.1:8000/upload/", {
+    fetch(`${API_BASE_URL}/upload/`, {
       method: "POST",
       body: formData,
     })
