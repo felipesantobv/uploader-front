@@ -12,29 +12,21 @@ function App() {
   const [selectedFile, setSelectedFile] = useState();
   const [downloadFile, setDownloadFile] = useState("");
   const [isFilePicked, setIsFilePicked] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState("");
 
   const changeHandler = (event) => {
     setSelectedFile(event.target.files[0]);
     setIsFilePicked(true);
   };
 
-  const handleSubmission = () => {
+  async function handleSubmission() {
     const formData = new FormData();
 
     formData.append("file", selectedFile);
+    const response = await api.post("/upload/", formData);
 
-    fetch(`${API_BASE_URL}/upload/`, {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        console.log("Success:", result);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
+    setDownloadUrl(response.data.download_url);
+  }
 
   async function handleDownloadZipFile() {
     const response = await api.get(`/download/?file_name=${downloadFile}`, {
@@ -52,7 +44,6 @@ function App() {
 
       return true;
     }
-
   }
 
   return (
@@ -76,6 +67,17 @@ function App() {
       </div>
 
       <div>
+        {" "}
+        <p>
+          {downloadUrl ? (
+            <p>Download URL: {downloadUrl}</p>
+          ) : (
+            <p> aguardando ... </p>
+          )}
+        </p>
+      </div>
+
+      <div>
         <input
           type="text"
           name="file_name"
@@ -87,25 +89,6 @@ function App() {
       </div>
     </div>
   );
-
-  // return (
-  //   <div className="App">
-  //     <header className="App-header">
-  //       <img src={logo} className="App-logo" alt="logo" />
-  //       <p>
-  //         Edit <code>src/App.js</code> and save to reload.
-  //       </p>
-  //       <a
-  //         className="App-link"
-  //         href="https://reactjs.org"
-  //         target="_blank"
-  //         rel="noopener noreferrer"
-  //       >
-  //         Learn React
-  //       </a>
-  //     </header>
-  //   </div>
-  // );
 }
 
 export default App;
